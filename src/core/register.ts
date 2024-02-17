@@ -1,12 +1,12 @@
-import { StyleCache, SytleScope, parseStyle, setStyleTag } from "./core";
-import { CSSObject } from "./types";
-import { murmurhash3 } from "./utils";
+import { StyleCache, parseStyle, setStyleTag } from "./internal";
+import { CSSObject, StyleScope } from "../types";
+import { murmurhash3 } from "../utils";
 
 export function styleRegister(opts: {
   componentName: string;
   tokenHash: string;
   cssObj: CSSObject;
-  styleScope: SytleScope; // global: 全局样式, local: 局部样式
+  styleScope: StyleScope; // global: 全局样式, local: 局部样式
 }) {
   const { tokenHash, cssObj, componentName, styleScope } = opts;
   // 获取className

@@ -1,22 +1,16 @@
-import { CSSObject } from "../types";
-import { hyphenateClassName, hyphenateStyleName } from "../utils";
+import { CSSObject, StyleScope } from "../../types";
+import { hyphenateClassName, hyphenateStyleName } from "../../utils";
 
-
-function mergeClass (...names: string[]){
-  return names.filter(Boolean).join(' ');
-};
+function mergeClass(...names: string[]) {
+  return names.filter(Boolean).join(" ");
+}
 
 function hasParent(value: string) {
-  return value.includes('&');
+  return value.includes("&");
 }
 
 function replaceParent(value: string, parent: string) {
   return value.replace(/&/g, parent);
-}
-
-export enum SytleScope {
-  Global = 'global', // 全局样式
-  Local = 'local', // 局部样式
 }
 
 /**
@@ -24,24 +18,20 @@ export enum SytleScope {
  * @param css
  * @returns
  */
-export function parseStyle(
-  css: CSSObject,
-  opts: {
-    hashId?: string;
-    styleScope?: SytleScope;
-  },
-): string {
-  const { hashId, styleScope } = opts;
-  let rootSelector = '';
-  const firstRule = { selector: rootSelector, rules: css };
+export function parseStyle(cssObj:CSSObject,{
+  hashId = "",
+  styleScope = "local",
+} = {}): string {
+  let rootSelector = "";
+  const firstRule = { selector: rootSelector, rules: cssObj };
   const queue: Array<{ selector: string; rules: any }> = [firstRule];
   let styles: string[] = [];
   while (queue.length > 0) {
     const { selector, rules } = queue.shift()!;
-    let ruleStr = '';
+    let ruleStr = "";
     for (const key in rules) {
-      if (typeof rules[key] === 'object') {
-        if (key.length === 0) continue; // TODO: 是否生成随机key，用于随机命名情况下
+      if (typeof rules[key] === "object") {
+        if (key.length === 0) continue;
         let newKey = hyphenateClassName(key);
         if (hasParent(key)) {
           newKey = replaceParent(newKey, selector);
@@ -57,10 +47,10 @@ export function parseStyle(
       styles.push(`${selector}{${ruleStr}}`);
     }
   }
-  if (styleScope === SytleScope.Local) {
+  if (styleScope === "local") {
     styles = styles.map((style) => {
       return `:where(.${hashId})${style}`;
-    })
+    });
   }
-  return styles.join('');
+  return styles.join("");
 }
