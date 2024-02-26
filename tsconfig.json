@@ -1,15 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "module": "ESNext",
-    "lib": ["ES2015", "ES2020", "DOM", "ESNext"],
-    "moduleResolution": "Node",
-
+    "target": "ESNext",
     "declaration": true,
-    "outDir": "dist",
-    "skipLibCheck": true,
-    "isolatedModules": true
+    "lib": ["ESNext", "DOM"],
+    "outDir": "./dist",
+    "strict": true,
+    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "importHelpers": true
   },
   "include": ["src/**/*.ts"],
   "exclude": [
