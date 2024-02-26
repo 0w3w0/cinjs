@@ -1,41 +1,79 @@
-import { StyleCache, parseStyle, setStyleTag } from "./internal";
-import { CSSObject, StyleScope } from "../types";
+import { CSSObject, StyleFunc, StyleScope } from "../types";
 import { murmurhash3 } from "../utils";
+import {
+  StyleCache,
+  createStyleSheet,
+  hasStyleSheet,
+  parseCSSObject,
+} from "./internal";
 
-export function styleRegister(opts: {
-  componentName: string;
-  tokenHash: string;
-  cssObj: CSSObject;
-  styleScope: StyleScope; // global: 全局样式, local: 局部样式
-}) {
-  const { tokenHash, cssObj, componentName, styleScope } = opts;
-  // 获取className
-  const className = Object.keys(cssObj)
-    .map((v) => {
-      if (v.startsWith(".")) return v.slice(1);
-      return v;
-    })
-    .join(" ");
-  // 生成csshash
-  const hashCodeKey = `${componentName}${className}`;
-  const cssHash = murmurhash3(hashCodeKey);
-  const hashId = `css-${cssHash}`;
-  // 获取缓存
-  const cache = StyleCache.get(cssHash);
-  if (!cache || cache.tokenHash !== tokenHash) {
-    // 解析css
-    const styleStr = parseStyle(cssObj, { hashId, styleScope });
-    // 设置缓存
-    StyleCache.set(cssHash, {
-      className: className,
-      cssHash,
-      tokenHash,
-    });
-    // 更新style标签
-    setStyleTag(cssHash, tokenHash, styleStr);
-  }
-  return {
-    hashId,
-    className,
-  };
+function createStaticStyle(
+  hashId: string,
+  cssObj: CSSObject,
+  scope: StyleScope
+) {
+  if (hasStyleSheet(hashId)) return;
+  createStyleSheet(hashId, parseCSSObject(hashId, cssObj, scope));
 }
+
+function createUpdateStyle(
+  hashId: string,
+  className: string,
+  css: StyleFunc,
+  scope: StyleScope
+) {
+  if (hasStyleSheet(hashId)) return;
+  const cssString = parseCSSObject(hashId, css(), scope);
+  const tag = createStyleSheet(hashId, cssString);
+  StyleCache.set(hashId, {
+    element: tag,
+    styleFunc: css,
+    scope,
+    className,
+    hashId,
+  });
+}
+
+function createStyle(
+  css: StyleFunc,
+  opts: Partial<{
+    key: string;
+    scope: StyleScope;
+    update: boolean;
+  }> = {
+    update: false,
+  }
+) {
+  let { key, scope, update } = opts;
+  if (!scope) scope = "local";
+  const cssObj = css();
+  if (!key) {
+    key = `css-${murmurhash3(JSON.stringify(cssObj))}`;
+  } else {
+    key = `css-${murmurhash3(key)}`;
+  }
+  let className = "";
+  for (let v in cssObj) {
+    className += v.startsWith(".") ? v.slice(1) + " " : v + " ";
+  }
+  className = className.trim();
+  if (!update) {
+    createStaticStyle(key, cssObj, scope!);
+  } else {
+    createUpdateStyle(key, className, css, scope!);
+  }
+  return [key, className];
+}
+
+function updateStyle() {
+  StyleCache.forEach((value, _) => {
+    const style = value.styleFunc();
+    const cssString = parseCSSObject(value.hashId, style, value.scope);
+    value.element.innerHTML = cssString;
+  });
+}
+
+export {
+  createStyle,
+  updateStyle,
+};

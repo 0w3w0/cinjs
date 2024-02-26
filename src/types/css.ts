@@ -3,3 +3,5 @@ export type CSSObject = {
 }| {
   [key: string]: CSSObject;
 };
+
+export type StyleFunc = () => CSSObject;

@@ -1,16 +1,21 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ES2022",
-    "sourceMap": true,
-    "lib": ["ES2022", "dom"],
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ES2015", "ES2020", "DOM", "ESNext"],
+    "moduleResolution": "Node",
+
     "declaration": true,
-    "outDir": "./publish",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "isolatedModules": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/**/*.e2e-spec.ts"
+  ]
 }

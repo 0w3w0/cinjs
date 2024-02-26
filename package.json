@@ -1,11 +1,25 @@
 {
-  "name": "cssinjs",
-  "version": "1.0.0",
+  "name": "cinjs",
+  "version": "0.1.0",
   "description": "",
-  "scripts": {
-    
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
   },
-  "keywords": [],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest"
+  },
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": ["cssinjs","css-in-js","css","in","js","jss"],
   "author": "",
-  "license": "ISC"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vitest": "^1.3.0"
+  }
 }

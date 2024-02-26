@@ -18,10 +18,7 @@ function replaceParent(value: string, parent: string) {
  * @param css
  * @returns
  */
-export function parseStyle(cssObj:CSSObject,{
-  hashId = "",
-  styleScope = "local",
-} = {}): string {
+export function parseCSSObject(hashId:string,cssObj:CSSObject,styleScope:StyleScope): string {
   let rootSelector = "";
   const firstRule = { selector: rootSelector, rules: cssObj };
   const queue: Array<{ selector: string; rules: any }> = [firstRule];

@@ -1,7 +1,11 @@
+import { StyleFunc, StyleScope } from "../../types";
+
 export interface CacheValue {
+  element: HTMLStyleElement;
+  styleFunc: StyleFunc;
+  scope:StyleScope;
   className: string;
-  tokenHash: string;
-  cssHash: string;
+  hashId: string;
 }
 
 export class StyleCache {
@@ -13,5 +17,9 @@ export class StyleCache {
 
   static set(key: string, value: CacheValue) {
     this.cache.set(key, value);
+  }
+
+  static forEach(callback: (value: CacheValue, key: string) => void) {
+    this.cache.forEach(callback);
   }
 }
